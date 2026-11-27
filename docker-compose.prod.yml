@@ -1,0 +1,52 @@
+services:
+  jenkins:
+    build: ./jenkins
+    container_name: jenkins
+    restart: unless-stopped
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/opt/cicd-infra
+    networks:
+      - prod-net
+
+  mongodb-prod:
+    image: mongo:7
+    container_name: mongodb-prod
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    volumes:
+      - mongo_prod_data:/data/db
+    networks:
+      - prod-net
+
+  api-prod:
+    image: cicd-api:master
+    container_name: api-prod
+    restart: unless-stopped
+    profiles: ["app"]
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.prod
+    depends_on:
+      - mongodb-prod
+    networks:
+      - prod-net
+
+volumes:
+  jenkins_home:
+  mongo_prod_data:
+
+networks:
+  prod-net:
+    name: prod-net
+    driver: bridge

@@ -1,0 +1,36 @@
+services:
+  mongodb-test:
+    image: mongo:7
+    container_name: mongodb-test
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    volumes:
+      - mongo_test_data:/data/db
+    networks:
+      - test-net
+
+  api-test:
+    image: cicd-api:testing
+    container_name: api-test
+    restart: unless-stopped
+    profiles: ["app"]
+    ports:
+      - "3001:3000"
+    env_file:
+      - .env.test
+    depends_on:
+      - mongodb-test
+    networks:
+      - test-net
+
+volumes:
+  mongo_test_data:
+
+networks:
+  test-net:
+    name: test-net
+    driver: bridge

@@ -1,0 +1,14 @@
+{
+	"name": "cicd-infra",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"deploy:prod": "docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build",
+		"deploy:test": "docker compose -f docker-compose.test.yml --env-file .env.test up -d --build",
+		"deploy:api:prod": "docker compose -f docker-compose.prod.yml --env-file .env.prod --profile app up -d --no-deps api-prod",
+		"deploy:api:test": "docker compose -f docker-compose.test.yml --env-file .env.test --profile app up -d --no-deps api-test",
+		"down:prod": "docker compose -f docker-compose.prod.yml --env-file .env.prod --profile app down",
+		"down:test": "docker compose -f docker-compose.test.yml --env-file .env.test --profile app down",
+		"logs:jenkins": "docker logs -f jenkins"
+	}
+}
