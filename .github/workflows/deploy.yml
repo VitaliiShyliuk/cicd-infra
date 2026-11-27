@@ -22,3 +22,9 @@ jobs:
           context: .
           push: true
           tags: vitaliishyliuk/python-app:latest
+
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Hello World
+        run: echo "Hello World"
